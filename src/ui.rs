@@ -168,7 +168,7 @@ fn render_list(f: &mut Frame, app: &App, chunk: Rect) {
         .get_current_patch_feed_page()
         .unwrap();
 
-    let mut index: u32 = (page_number - 1) * app.config.page_size;
+    let mut index: u32 = (page_number - 1) * app.config.get_page_size();
     for patch in patch_feed_page {
         let patch_title = format!("{:width$}", patch.get_title(), width = 70);
         let patch_title = format!("{:.width$}", patch_title, width = 70);
@@ -209,7 +209,7 @@ fn render_list(f: &mut Frame, app: &App, chunk: Rect) {
 
     let mut list_state = ListState::default();
     list_state.select(Some(
-        (patchset_index - (page_number - 1) * app.config.page_size)
+        (patchset_index - (page_number - 1) * app.config.get_page_size())
             .try_into()
             .unwrap(),
     ));
