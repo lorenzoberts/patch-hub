@@ -1,5 +1,8 @@
 use std::env;
 
+#[cfg(test)]
+mod tests;
+
 pub struct Config {
     page_size: u32,
     patchsets_cache_dir: String,
@@ -21,24 +24,24 @@ impl Config {
             Err(_) => 30,
         };
 
-        patchsets_cache_dir = match env::var("KW_CACHE_DIR") {
-            Ok(value) => format!("{value}/patch_hub/patchsets"),
-            Err(_) => format!("{}/.cache/kw/patch_hub/patchsets", env::var("HOME").unwrap()),
+        patchsets_cache_dir = match env::var("PATCH_HUB_CACHE_DIR") {
+            Ok(value) => format!("{value}/patchsets"),
+            Err(_) => format!("{}/.cache/patch_hub/patchsets", env::var("HOME").unwrap()),
         };
 
-        bookmarked_patchsets_path = match env::var("KW_DATA_DIR") {
-            Ok(value) => format!("{value}/patch_hub/bookmarked_patchsets.json"),
-            Err(_) => format!("{}/.local/share/kw/patch_hub/bookmarked_patchsets.json", env::var("HOME").unwrap()),
+        bookmarked_patchsets_path = match env::var("PATCH_HUB_DATA_DIR") {
+            Ok(value) => format!("{value}/bookmarked_patchsets.json"),
+            Err(_) => format!("{}/.local/share/patch_hub/bookmarked_patchsets.json", env::var("HOME").unwrap()),
         };
 
-        mailing_lists_path = match env::var("KW_DATA_DIR") {
-            Ok(value) => format!("{value}/patch_hub/mailing_lists.json"),
-            Err(_) => format!("{}/.local/share/kw/patch_hub/mailing_lists.json", env::var("HOME").unwrap()),
+        mailing_lists_path = match env::var("PATCH_HUB_DATA_DIR") {
+            Ok(value) => format!("{value}/mailing_lists.json"),
+            Err(_) => format!("{}/.local/share/patch_hub/mailing_lists.json", env::var("HOME").unwrap()),
         };
 
-        reviewed_patchsets_path = match env::var("KW_DATA_DIR") {
-            Ok(value) => format!("{value}/patch_hub/reviewed_patchsets.json"),
-            Err(_) => format!("{}/.local/share/kw/patch_hub/reviewed_patchsets.json", env::var("HOME").unwrap()),
+        reviewed_patchsets_path = match env::var("PATCH_HUB_DATA_DIR") {
+            Ok(value) => format!("{value}/reviewed_patchsets.json"),
+            Err(_) => format!("{}/.local/share/patch_hub/reviewed_patchsets.json", env::var("HOME").unwrap()),
         };
 
         Config {
