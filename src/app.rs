@@ -206,7 +206,7 @@ impl PatchsetDetailsAndActionsState {
         *self.patchset_actions.get(&PatchsetAction::ReplyWithReviewedBy).unwrap()
     }
 
-    pub fn reply_patchset_with_reviewed_by(self: &Self, target_list: &str) -> color_eyre::Result<Vec<u32>> {
+    pub fn reply_patchset_with_reviewed_by(self: &Self, target_list: &str, git_send_email_options: &str) -> color_eyre::Result<Vec<u32>> {
         let lore_api_client = BlockingLoreAPIClient::new();
         let (git_user_name, git_user_email) = lore_session::get_git_signature("");
         let mut successful_indexes = Vec::new();
@@ -226,7 +226,8 @@ impl PatchsetDetailsAndActionsState {
 
         let git_reply_commands = match lore_session::prepare_reply_patchset_with_reviewed_by(
             &lore_api_client, tmp_dir, target_list,
-            &self.patches, &format!("{git_user_name} <{git_user_email}>")
+            &self.patches, &format!("{git_user_name} <{git_user_email}>"),
+            git_send_email_options
         ) {
             Ok(commands_vector) => commands_vector,
             Err(failed_patch_html_request) => {
@@ -481,7 +482,7 @@ impl App {
             let successful_indexes = self.patchset_details_and_actions_state
                 .as_ref()
                 .unwrap()
-                .reply_patchset_with_reviewed_by("all")?;
+                .reply_patchset_with_reviewed_by("all", &self.config.get_git_send_email_options())?;
 
             if !successful_indexes.is_empty() {
                 self.reviewed_patchsets.insert(

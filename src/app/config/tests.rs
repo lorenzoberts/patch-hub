@@ -16,6 +16,7 @@ fn can_build_with_default_values() {
     assert_eq!("/fake/home/path/.local/share/patch_hub/bookmarked_patchsets.json", config.get_bookmarked_patchsets_path());
     assert_eq!("/fake/home/path/.local/share/patch_hub/mailing_lists.json", config.get_mailing_lists_path());
     assert_eq!("/fake/home/path/.local/share/patch_hub/reviewed_patchsets.json", config.get_reviewed_patchsets_path());
+    assert_eq!("--dry-run --suppress-cc=all", config.get_git_send_email_options());
 }
 
 #[test]
@@ -31,6 +32,7 @@ fn can_build_with_config_file() {
     assert_eq!("/bookmarked/patchsets/path", config.get_bookmarked_patchsets_path());
     assert_eq!("/mailing/lists/path", config.get_mailing_lists_path());
     assert_eq!("/reviewed/patchsets/path", config.get_reviewed_patchsets_path());
+    assert_eq!("--long-option value -s -h -o -r -t", config.get_git_send_email_options());
 }
 
 #[test]
@@ -40,16 +42,19 @@ fn can_build_with_env_vars() {
     env::set_var("PATCH_HUB_PAGE_SIZE", "42");
     env::set_var("PATCH_HUB_CACHE_DIR", "/fake/cache/path");
     env::set_var("PATCH_HUB_DATA_DIR", "/fake/data/path");
+    env::set_var("PATCH_HUB_GIT_SEND_EMAIL_OPTIONS", "--option1 --option2");
     let config = Config::build();
     env::remove_var("PATCH_HUB_PAGE_SIZE");
     env::remove_var("PATCH_HUB_CACHE_DIR");
     env::remove_var("PATCH_HUB_DATA_DIR");
+    env::remove_var("PATCH_HUB_GIT_SEND_EMAIL_OPTIONS");
 
     assert_eq!(42, config.get_page_size());
     assert_eq!("/fake/cache/path/patchsets", config.get_patchsets_cache_dir());
     assert_eq!("/fake/data/path/bookmarked_patchsets.json", config.get_bookmarked_patchsets_path());
     assert_eq!("/fake/data/path/mailing_lists.json", config.get_mailing_lists_path());
     assert_eq!("/fake/data/path/reviewed_patchsets.json", config.get_reviewed_patchsets_path());
+    assert_eq!("--option1 --option2", config.get_git_send_email_options());
 }
 
 #[test]

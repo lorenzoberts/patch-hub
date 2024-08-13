@@ -347,7 +347,7 @@ pub fn load_available_lists(filepath: &str) -> io::Result<Vec<MailingList>> {
 
 pub fn prepare_reply_patchset_with_reviewed_by<T>(
     lore_api_client: &T, tmp_dir: &Path, target_list: &str,
-    patches: &Vec<String>, git_signature: &str
+    patches: &Vec<String>, git_signature: &str, git_send_email_options: &str
 ) -> Result<Vec<Command>, FailedPatchHTMLRequest>
 where T: PatchHTMLRequest {
     let mut git_reply_commands: Vec<Command> = Vec::new();
@@ -369,7 +369,7 @@ where T: PatchHTMLRequest {
             Err(failed_patch_html_request) => return Err(failed_patch_html_request),
         };
 
-        let mut git_reply_command = extract_git_reply_command(&patch_html);
+        let mut git_reply_command = extract_git_reply_command(&patch_html, git_send_email_options);
         git_reply_command.arg(format!("{}", reply_path.display()));
 
         git_reply_commands.push(git_reply_command);
@@ -408,12 +408,13 @@ fn generate_patch_reply_template(patch_contents: &str) -> String {
     reply_template
 }
 
-fn extract_git_reply_command(patch_html: &str) -> Command {
+fn extract_git_reply_command(patch_html: &str, git_send_email_options: &str) -> Command {
     let mut git_reply_command = Command::new("git");
     git_reply_command.arg("send-email");
-    // To avoid any chance of sending the reply while validating, add `--dry-run`
-    git_reply_command.arg("--dry-run");
-    git_reply_command.arg("--suppress-cc=all");
+
+    for option in git_send_email_options.split_whitespace() {
+        git_reply_command.arg(option);
+    }
 
     let re_full_git_command = Regex::new(
         r#"(?s)git-send-email\(1\):(.*?)/path/to/YOUR_REPLY"#

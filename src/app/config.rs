@@ -11,6 +11,7 @@ pub struct Config {
     bookmarked_patchsets_path: String,
     mailing_lists_path: String,
     reviewed_patchsets_path: String,
+    git_send_email_options: String,
 }
 
 impl Config {
@@ -24,6 +25,7 @@ impl Config {
             bookmarked_patchsets_path: format!("{data_dir}/bookmarked_patchsets.json"),
             mailing_lists_path: format!("{data_dir}/mailing_lists.json"),
             reviewed_patchsets_path: format!("{data_dir}/reviewed_patchsets.json"),
+            git_send_email_options: format!("--dry-run --suppress-cc=all"),
         }
     }
 
@@ -62,6 +64,10 @@ impl Config {
             self.mailing_lists_path = format!("{data_dir}/mailing_lists.json");
             self.reviewed_patchsets_path = format!("{data_dir}/reviewed_patchsets.json");
         };
+
+        if let Ok(git_send_email_options) = env::var("PATCH_HUB_GIT_SEND_EMAIL_OPTIONS") {
+            self.git_send_email_options = git_send_email_options;
+        };
     }
 
     pub fn build() -> Self {
@@ -94,6 +100,10 @@ impl Config {
 
     pub fn get_reviewed_patchsets_path(&self) -> &str {
         &self.reviewed_patchsets_path
+    }
+
+    pub fn get_git_send_email_options(&self) -> &str {
+        &self.git_send_email_options
     }
 
     #[allow(dead_code)]
